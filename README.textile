@@ -13,20 +13,43 @@ h2. Features
 * browsing of plugins from internal and upstream repositories
 * automatic update of plugin meta data from upstream plugin repositories (e.g. central repository at grails.org)
 
+h2. Installation
+
+Currently Plugrepo must be downloaded from GitHub and built using @grails war@. Afterwards, the resulting war
+ file can be installed in any servlet container, e.g. Apache Tomcat.
+
+h2. Usage
+
+After installation plugrepo can be used instantly. Simply open the start page (e.g. http://localhost:8080/plugrepo)
+and follow the instructions for configuring your Grails application.
+
+Plugins can be browsed, and installed from upstream repositories. Currently only the official grails.org repository
+is pre-configured. User-defined repositories will come later.
+
+h2. Internals
+
+Plugrepo defines several different types of repositories: 
+
+* internal repository, where Plugrepo stores uploaded plugins and plugins installed from remote repositores.
+* Subversion-based repository, such as the offical repository at grails.org (or rather svn.grails.codehaus.org)
+* URL-based repository, which is similar to the Subversion-based repo, but it points directly to a meta-data XML file.
+
 h2. Work in progress
 
 For the first release, a couple of things still need to be done:
 
 * tests!
 * manual installation of plugins from the upstream repository
-* automatic, transparent installation of plugins from the parent repository, when using @grails install-plugin@ (proxy mode)
+* automatic, transparent installation of plugins from the parent repository, 
+  when using @grails install-plugin@ (proxy mode)
 
 
 h2. Roadmap
 
-Other ideas:
-
+* User-defined repositories and repository management
 * blacklisting of plugins and plugin versions
 * check whether plugrepo can be used for Griffon
 * multiple internal and external (upstream) plugin repositories
-* security (allow upload/installation only for authenticated users, etc.)
+* security (allow download/upload/installation only for authenticated users, etc.)
+* download and usage statistics
+* Grails script for plugin upload similar to @grails release-plugin@

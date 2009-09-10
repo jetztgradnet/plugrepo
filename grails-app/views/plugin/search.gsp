@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<meta name="layout" content="plugin" />
+	<meta name="layout" content="plugrepo" />
 	<g:javascript library="prototype" />
     <title><g:if test="${params.q && params.q?.trim() != ''}">${params.q} - </g:if>Grails Searchable Plugin</title>
     <style type="text/css">

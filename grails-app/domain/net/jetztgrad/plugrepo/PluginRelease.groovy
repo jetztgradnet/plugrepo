@@ -8,6 +8,7 @@ class PluginRelease {
 	String documentationUrl
 	String downloadUrl
 	Plugin plugin
+	Statistics statistics
 
 	static searchable = true
 	static belongsTo = [repository:Repository]
@@ -21,6 +22,7 @@ class PluginRelease {
 		fileToken(nullable: true)
 		documentationUrl(nullable: true) //, url: true)
 		downloadUrl(nullable: true) //, url: true)
+		statistics(nullable: true)
     }
 
 	String toString() {

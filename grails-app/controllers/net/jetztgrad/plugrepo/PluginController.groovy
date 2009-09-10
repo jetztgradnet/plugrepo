@@ -1,12 +1,13 @@
 package net.jetztgrad.plugrepo
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream
+import java.io.OutputStream
 
 import org.compass.core.engine.SearchEngineQueryParseException
 
-import net.jetztgrad.plugrepo.Plugin;
-import net.jetztgrad.plugrepo.Repository;
+import net.jetztgrad.plugrepo.Plugin
+import net.jetztgrad.plugrepo.Statistics
+import net.jetztgrad.plugrepo.Repository
 
 class PluginController {
 	
@@ -137,7 +138,7 @@ class PluginController {
 			response.sendError 404
 			return
 		}
-
+		
 		String fileToken = pluginRelease.fileToken;
 		def repo = pluginRelease.repository
 		InputStream inp = storageService.readFile(repo, fileToken)
@@ -147,6 +148,20 @@ class PluginController {
 			return
 		}
 		
+		// keep some statistics
+		if (!pluginRelease.statistics) {
+			pluginRelease.statistics = new Statistics()
+		}
+		pluginRelease.statistics.downloads++
+		pluginRelease.save()
+		
+		if (!plugin.statistics) {
+			plugin.statistics = new Statistics()
+		}
+		plugin.statistics.downloads++
+		plugin.save()
+		
+		// perform download
 		try {
 			response.contentType = 'application/zip'
 			response.outputStream << inp
@@ -166,7 +181,7 @@ class PluginController {
 	
 	def releaseinfo = {
 		def version = params.version
-		render text:"relaseInfo ${version}"
+		render text:"relaseInfo ${version}", contentType:"text/txt"
 	}
 	
 	def info = {
@@ -291,6 +306,17 @@ class PluginController {
 					|| plugin.defaultRelease == null) {
 					plugin.defaultRelease = pluginRelease
 				}
+				
+				// keep some statistics
+				if (!pluginRelease.statistics) {
+					pluginRelease.statistics = new Statistics()
+				}
+				pluginRelease.statistics.uploads++
+
+				if (!plugin.statistics) {
+					plugin.statistics = new Statistics()
+				}
+				plugin.statistics.uploads++
 				
 				if (repo.save()
 					&& plugin.save()) {
