@@ -60,62 +60,66 @@ class RemoteRepositoryService {
 		
 		log.info "parsing plugin list of repository ${repo.name}"
 		
-//		Plugin.withSession { session ->
-//			Plugin.withTransaction {
-
-				pluginList.plugin*.release*.each { elRelease ->
-					def elPlugin = elRelease.parent()
+		Plugin.withSession { session ->
+			pluginList.plugin*.each { elPlugin ->
+				Plugin.withTransaction {
 					def name = elPlugin.@name?.text()
-					def version = elRelease.@version?.text()
-					def documentationUrl = elRelease.documentation?.text()
-					def downloadUrl = elRelease.file?.text()
-
-					//log.info "repository ${repo.name}: $name $version"
-
-					// get or create plugin
 					def plugin = Plugin.findByName(name)
-					if (!plugin) {
-						def author = elRelease.author?.text()
-						def description = elRelease.@description?.text()
-						
-						plugin = new Plugin(name: name, 
-											author: author,
-											description: description)
-						if (plugin.save()) {
-							newPlugins << plugin
-							log.info "found new plugin $name ($author)"
-						}
-						else {
-							log.error "failed to save new plugin $name: ${plugin.errors}"
-						}
-					}
 					
-					// get or create plugin release
-					//def pluginRelease = Plugin.findByNameAndPluginVersion(name, version)
-					def pluginRelease = PluginRelease.find("from PluginRelease as p where p.name = ? and p.pluginVersion = ? and p.repository = ?", [ name, version, repo ])
-					if (!pluginRelease) {
-
-						pluginRelease = new PluginRelease(name: name, 
-							pluginVersion: version,
-							plugin: plugin,
-							repository: repo,
-							documentationUrl: documentationUrl,
-							downloadUrl: downloadUrl)
-						repo.addToReleases(pluginRelease)
-						plugin.addToReleases(pluginRelease)
-						if (repo.save()
-							&& plugin.save()) {
+					log.info "repository ${repo.name}: updating plugin $name"
+					
+					elPlugin.release*.each { elRelease ->
+						def version = elRelease.@version?.text()
+						def documentationUrl = elRelease.documentation?.text()
+						def downloadUrl = elRelease.file?.text()
+						
+						//log.info "repository ${repo.name}: $name $version"
+						
+						// get or create plugin
+						if (!plugin) {
+							def author = elRelease.author?.text()
+							def description = elRelease.@description?.text()
+						
+							plugin = new Plugin(name: name, 
+												author: author,
+												description: description)
+							if (plugin.save()) {
+								newPlugins << plugin
+								log.info "found new plugin $name ($author)"
+							}
+							else {
+								log.error "failed to save new plugin $name: ${plugin.errors}"
+							}
+						}
+					
+						// get or create plugin release
+						//def pluginRelease = Plugin.findByNameAndPluginVersion(name, version)
+						def pluginRelease = PluginRelease.find("from PluginRelease as p where p.name = ? and p.pluginVersion = ? and p.repository = ?", [ name, version, repo ])
+						if (!pluginRelease) {
+							pluginRelease = new PluginRelease(name: name, 
+								pluginVersion: version,
+								plugin: plugin,
+								repository: repo,
+								documentationUrl: documentationUrl,
+								downloadUrl: downloadUrl)
+							repo.addToReleases(pluginRelease)
+							plugin.addToReleases(pluginRelease)
+							
 							newPluginReleases << pluginRelease
 							log.info "found new plugin release $name $version"
 						}
-						else {
+					}
+					if (plugin) {
+						if (!repo.save()
+							|| !plugin.save()) {
+							
 							log.error "failed to save new plugin release $name $version: ${pluginRelease?.errors}, ${repo?.errors}, ${plugin?.errors}"
 						}
 					}
+					session.flush()
 				}
-//			}
-//			session.flush()
-//		}
+			}
+		}
 		
 		log.info "finished parsing plugin list of repository ${repo.name} (${newPlugins.size()} new)"
 		
