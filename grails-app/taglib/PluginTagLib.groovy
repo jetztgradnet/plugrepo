@@ -13,17 +13,22 @@ class PluginTagLib {
 		if (!pluginReleases) {
 			pluginReleases = []
 		}
+		def pluginReleaseCount = pluginReleases.size()
 		// determine lower range
 		def releasesLowerRange=(-1 * Math.min(maxReleases, pluginReleases.size()))
 		def latestPluginReleases = pluginReleases[releasesLowerRange..-1]
-		def var = attrs.var ? attrs.var : "pluginRelease"
+		def releaseVar = attrs.var ? attrs.var : "pluginRelease"
+		def countVar = attrs.countVar ? attrs.countVar : "pluginReleaseCount"
 		
 		latestPluginReleases?.eachWithIndex { pluginRelease, index ->
 			def params = [:]
 			params.putAll attrs
-			['var', 'status'].each { params.remove it }
+			// overwrite named parameters, if they exist
+			[releaseVar, countVar, 'status'].each { params.remove it }
 			// set plugin release
-			params[(var)] = pluginRelease
+			params[(releaseVar)] = pluginRelease
+			// set plugin release count
+			params[(countVar)] = pluginReleaseCount
 			// set status
 			if (attrs?.status) {
 				params[(attrs?.status)] = index

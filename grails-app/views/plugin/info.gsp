@@ -12,7 +12,7 @@
 				<div class="message">${flash.message}</div>
 			</g:if>
 			<div class="list">
-				<g:render template="info" model="['pluginInstance':pluginInstance]"/>
+				<g:render template="plugin" model="['pluginInstance':pluginInstance]"/>
 			</div>
 		</div>
 	</body>

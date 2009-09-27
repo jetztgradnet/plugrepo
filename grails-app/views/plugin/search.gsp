@@ -7,7 +7,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta name="layout" content="plugrepo" />
 	<g:javascript library="prototype" />
-    <title><g:if test="${params.q && params.q?.trim() != ''}">${params.q} - </g:if>Grails Searchable Plugin</title>
+    <title>Plugin Search</title>
     <style type="text/css">
       * {
         font-family: Arial, sans-serif;
@@ -45,7 +45,6 @@
       }
 
       #header form {
-          margin-left: 22em;
           padding-top: .1em;
       }
 
@@ -91,11 +90,26 @@
         }
     </script>
   </head>
-  <body onload="focusQueryInput();">
+
+    <body onload="focusQueryInput();">
+		<div class="body">
+			<g:if test="${flash.message}">
+				<div class="message">${flash.message}</div>
+			</g:if>
+			<g:hasErrors bean="${plugin}">
+				<g:renderErrors bean="${plugin}" as="list" />
+			</g:hasErrors>
+			<p/>
+			<h2>Plugin Search</h2>
+
+
   <div id="header">
+	<g:render template="search"/>
+	<%--
     <g:form url='[controller: "plugin", action: "search"]' id="searchableForm" name="searchableForm" method="get">
         <g:textField class="search" name="q" value="${params.q}" size="50"/> <input type="submit" value="Search" />
     </g:form>
+	--%>
     <div style="clear: both; display: none;" class="hint">See <a href="http://lucene.apache.org/java/docs/queryparsersyntax.html">Lucene query syntax</a> for advanced queries</div>
   </div>
   <div id="main">
@@ -153,12 +167,31 @@
         <g:each var="result" in="${searchResult.results}" status="index">
           <div class="result">
             <g:set var="className" value="${ClassUtils.getShortName(result.getClass())}" />
-            <g:set var="link" value="${createLink(controller: className[0].toLowerCase() + className[1..-1], action: 'show', id: result.id)}" />
-            <div class="name"><a href="${link}">${className} #${result.id}</a></div>
-            <g:set var="desc" value="${result.toString()}" />
-            <g:if test="${desc.size() > 120}"><g:set var="desc" value="${desc[0..120] + '...'}" /></g:if>
-            <div class="desc">${desc.encodeAsHTML()}</div>
-            <div class="displayLink">${link}</div>
+			<%--
+            <g:set var="link" value="${createLink(controller: 'plugin', action: 'info', params: [plugin: result.name])}" />
+			<div class="name"><a href="${link}">${className} ${result.name}</a></div>
+			<g:if test="${className == 'Plugin'}">
+				<g:set var="desc" value="${result?.description}" />
+				<g:set var="pluginInstance" value="${result}" />
+			</g:if>
+			<g:if test="${className == 'PluginRelease'}">
+				<g:set var="desc" value="${result?.plugin?.description}" />
+				<g:set var="pluginInstance" value="${result.plugin}" />
+			</g:if>
+            
+			<g:if test="${desc?.size() > 120}"><g:set var="desc" value="${desc[0..120] + '...'}" /></g:if>
+			<div class="desc">${desc?.encodeAsHTML()}</div>
+			<div class="displayLink">${link}</div>
+			--%>
+
+			<g:if test="${className == 'Plugin'}">
+				<g:render template="pluginSearchResult" model="['pluginInstance':result]"/>
+			</g:if>
+			<g:if test="${className == 'PluginRelease'}">
+				<g:render template="pluginReleaseSearchResult" model="['pluginInstance':result.plugin, 'pluginRelease':result]"/>
+			</g:if>
+			
+			
           </div>
         </g:each>
       </div>
@@ -175,5 +208,7 @@
       </div>
     </g:if>
   </div>
+
+		</div>
   </body>
 </html>

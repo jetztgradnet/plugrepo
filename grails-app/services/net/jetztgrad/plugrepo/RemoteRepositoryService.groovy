@@ -66,7 +66,7 @@ class RemoteRepositoryService {
 					def name = elPlugin.@name?.text()
 					def plugin = Plugin.findByName(name)
 					
-					log.info "repository ${repo.name}: updating plugin $name"
+					log.debug "repository ${repo.name}: updating plugin $name"
 					
 					elPlugin.release*.each { elRelease ->
 						def version = elRelease.@version?.text()
@@ -121,7 +121,7 @@ class RemoteRepositoryService {
 			}
 		}
 		
-		log.info "finished parsing plugin list of repository ${repo.name} (${newPlugins.size()} new)"
+		log.info "finished parsing plugin list of repository ${repo.name} (${newPlugins.size()} new, ${newPluginReleases.size()} updated)"
 		
 		return newPluginReleases
 	}

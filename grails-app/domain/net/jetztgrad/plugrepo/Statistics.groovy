@@ -6,5 +6,6 @@ class Statistics {
 	
     static constraints = {
 		downloads(nullable: false)
+		uploads(nullable: false)
     }
 }

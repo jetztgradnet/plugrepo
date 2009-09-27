@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta name="layout" content="plugin" />
+        <meta name="layout" content="plugrepo" />
         <title>Plugin List</title>
     </head>
     <body>

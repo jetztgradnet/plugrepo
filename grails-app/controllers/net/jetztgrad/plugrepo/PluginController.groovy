@@ -153,6 +153,7 @@ class PluginController {
 			pluginRelease.statistics = new Statistics()
 		}
 		pluginRelease.statistics.downloads++
+		pluginRelease.statistics.save()
 		pluginRelease.save()
 		
 		if (!plugin.statistics) {
@@ -312,11 +313,13 @@ class PluginController {
 					pluginRelease.statistics = new Statistics()
 				}
 				pluginRelease.statistics.uploads++
+				pluginRelease.statistics.save()
 
 				if (!plugin.statistics) {
 					plugin.statistics = new Statistics()
 				}
 				plugin.statistics.uploads++
+				plugin.statistics.save()
 				
 				if (repo.save()
 					&& plugin.save()) {
