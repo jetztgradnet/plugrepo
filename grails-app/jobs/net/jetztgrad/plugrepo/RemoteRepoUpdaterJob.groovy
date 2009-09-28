@@ -14,16 +14,12 @@ class RemoteRepoUpdaterJob {
     def execute() {
 		// execute task
 		log.info "updating remote repositories"
-		log.info "TODO reenable task"
 		try {
 			remoteRepositoryService.update()
 		}
 		catch (Throwable t) {
 			log.error "failed to update remote repositores: " + t.message
 			log.debug "details: ", t
-		}
-		finally {
-			
 		}
     }
 }
