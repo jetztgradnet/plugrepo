@@ -117,7 +117,9 @@ class PluginController {
 		}
 		
 		if (params.version) {
+			// TODO find plugin release by plugin name, version, and from internal repoitories only
 			pluginRelease = PluginRelease.findByNameAndPluginVersion(params.plugin, params.version)
+			plugin = pluginRelease?.plugin
 		}
 		else {
 			plugin = Plugin.findByName(params.plugin, true)
@@ -156,7 +158,7 @@ class PluginController {
 		pluginRelease.statistics.save()
 		pluginRelease.save()
 		
-		if (!plugin.statistics) {
+		if (!plugin?.statistics) {
 			plugin.statistics = new Statistics()
 		}
 		plugin.statistics.downloads++
@@ -165,6 +167,7 @@ class PluginController {
 		// perform download
 		try {
 			response.contentType = 'application/zip'
+			response.setHeader("Content-disposition", "attachment; filename=grails-${plugin?.name}-${pluginRelease?.pluginVersion}.zip")
 			response.outputStream << inp
 			response.outputStream.flush()
 		}
